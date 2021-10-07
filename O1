@@ -1,0 +1,54 @@
+.thumb
+.syntax unified
+
+.include "gpio_constants.s"     // Register-adresser og konstanter for GPIO
+
+.text
+	.global Start
+	
+Start:
+
+    LDR R0, =LED_PORT     // loaded with 4
+    LDR R1, =PORT_SIZE  // loaded with 36
+    MUL R0, R0, R1
+    LDR R1, =GPIO_BASE
+    ADD R0, R0, R1
+
+	
+
+
+	Loop:
+		LDR R3, =BUTTON_PORT
+		LDR R7, =GPIO_PORT_DIN
+		LDR R4, =PORT_SIZE
+	    MUL R3, R3, R4
+	    LDR R5, =GPIO_BASE
+	    ADD R3, R3, R5
+	    LDR R8, [R3, R7]
+
+	  	MOV R9, #1
+	  	LSL R9, R9, #BUTTON_PIN
+	    AND R8, R8, R9
+
+		CMP R8, #0
+		BNE False
+			MOV R2, #1
+			LSL R2, R2, #LED_PIN
+ 			LDR R1, =GPIO_PORT_DOUTSET
+  			STR R2, [R0, R1]
+  			B Loop
+
+  		False:
+
+  			MOV R2, #1
+			LSL R2, R2, #LED_PIN
+ 			LDR R1, =GPIO_PORT_DOUTCLR
+  			STR R2, [R0, R1]
+  			B Loop
+
+
+
+
+
+NOP // Behold denne pÃ¥ bunnen av fila
+
